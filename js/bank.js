@@ -1,50 +1,57 @@
-// *get new value
+// *get amount
 function getInputValue(inputId) {
-  const inputField = document.getElementById(inputId);
-  //   new deposit
-  const newDepositValue = parseFloat(inputField.value);
-  inputField.value = "";
-  return newDepositValue;
+  const input = document.getElementById(inputId);
+  const newInputValue = parseFloat(input.value);
+  input.value = "";
+  return newInputValue;
 }
-// *update filed
-function updateField(totalFieldId, amount) {
-  const totalInput = document.getElementById(totalFieldId);
-  //   previous + new amount
-  const previousAmount = parseFloat(totalInput.innerText);
-  //   console.log(previousDepositAmount);
-  const newTotal = previousAmount + amount;
-  totalInput.innerText = newTotal;
+// *update field
+function updateField(fieldId, newAmount) {
+  const amountField = document.getElementById(fieldId);
+  const previousAmount = parseFloat(amountField.innerText);
+  const totalDeposit = previousAmount + newAmount;
+  amountField.innerText = totalDeposit;
 }
 // *update balance
-function updateBalance(fieldId, newAmount, isAdd) {
-  const totalBalance = document.getElementById(fieldId);
-
-  const previousBalance = parseFloat(totalBalance.innerText);
-
+function updateBalance(fieldId, prevAmount, isAdd) {
+  const balanceField = document.getElementById(fieldId);
+  const previousBalance = parseFloat(balanceField.innerText);
   if (isAdd == true) {
-    const newBalance = parseFloat(previousBalance + newAmount);
-    totalBalance.innerText = newBalance;
+    const totalBalance = previousBalance + prevAmount;
+    balanceField.innerText = totalBalance;
   } else {
-    const newBalance = parseFloat(previousBalance - newAmount);
-    totalBalance.innerText = newBalance;
+    const totalBalance = previousBalance - prevAmount;
+    balanceField.innerText = totalBalance;
   }
 }
 document.getElementById("deposit-btn").addEventListener("click", function () {
-  //  *********** deposit *************//
-
-  //   new deposit
+  // ******** deposit ******* //
+  // get deposit
   const newDepositValue = getInputValue("deposit-input");
+  // previous deposit
+  if (newDepositValue > 0) {
+    updateField("deposit", newDepositValue);
 
-  updateField("deposit", newDepositValue);
-
-  //  update balance
-  updateBalance("balance", newDepositValue, true);
+    //  update balance
+    updateBalance("balance", newDepositValue, true);
+  }
 });
-//  *************** withdraw *****************//
-document.getElementById("withdraw-btn").addEventListener("click", function () {
-  const newWithdrawAmount = getInputValue("withdraw-input");
 
-  updateField("withdraw", newWithdrawAmount);
-  // update balance
-  updateBalance("balance", newWithdrawAmount, false);
+document.getElementById("withdraw-btn").addEventListener("click", function () {
+  // ****** withdraw ******* //
+  // get withdraw
+  const newWithdrawValue = getInputValue("withdraw-input");
+  // previous withdraw
+  const currentBalance = document.getElementById("balance");
+  const currentBalanceValue = parseFloat(currentBalance.innerText);
+  if (newWithdrawValue > 0 && newWithdrawValue < currentBalanceValue) {
+    updateField("withdraw", newWithdrawValue);
+
+    // update balance
+    updateBalance("balance", newWithdrawValue, false);
+  }
+  if(newWithdrawValue > currentBalanceValue){
+    const error = document.getElementById('error-message');
+    error.innerText = "Your account dose not enough money!!"
+  }
 });
